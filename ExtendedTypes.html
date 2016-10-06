@@ -1,0 +1,45 @@
+<html>
+<head>
+<script>
+var xhttp
+
+function loadXMLDoc(filename) {
+  if (window.ActiveXObject) {
+    xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+  } else {
+    xhttp = new XMLHttpRequest();
+  }
+  xhttp.open("GET", filename, false);
+  try { xhttp.responseType = "msxml-document" } catch(err) {} // Helping IE11
+  xhttp.send("");
+  return xhttp.responseXML;
+}
+
+function displayResult() {
+  xml = loadXMLDoc("ExtendedTypes_v0.xml");
+  xsl = loadXMLDoc("ExtendedTypes.xsl");
+  // code for IE
+  if (window.ActiveXObject || xhttp.responseType == "msxml-document") {
+    ex = xml.transformNode(xsl);
+    document.getElementById("ExtendedTypesTable").innerHTML = ex;
+  }
+  // code for Chrome, Firefox, Opera, etc.
+  else if (document.implementation && document.implementation.createDocument) {
+    xsltProcessor = new XSLTProcessor();
+    xsltProcessor.importStylesheet(xsl);
+    resultDocument = xsltProcessor.transformToFragment(xml, document);
+    document.getElementById("ExtendedTypesTable").appendChild(resultDocument);
+  }
+}
+</script>
+</head>
+<body onload="displayResult()">
+<h2>SWC+ Predefined Types Table</h2>
+<p>
+Produced from xml-file <a href="ExtendedTypes_v0.xml">ExtendedTypes_v0.xml</a>, 
+validated with xml-schema <a href="ExtendedTypes_v0.xsd">ExtendedTypes_v0.xsd</a>, 
+and converted to the table below with xml-stylesheet <a href="ExtendedTypes.xsl">ExtendedTypes.xsl</a>.
+</p>
+<div id="ExtendedTypesTable" style="float:left;border:1px solid #000"/>
+</body>
+</html>

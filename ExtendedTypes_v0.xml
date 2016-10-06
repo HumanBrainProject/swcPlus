@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--?xml-stylesheet type="text/xsl" href="ExtendedTypes.xsl"?-->
+
+<ExtendedTypes version="0.1" maturity="alpha" xmlns="http://www.neuroinformatics.nl"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.neuroinformatics.nl http://www.neuroinformatics.nl/HBP/SWCplus/ExtendedTypes_v0.xsd">
+  <tree id="-1" key="root" name="root node">Root node, to be used as ParentID of first point in SWC file.</tree>>
+  <tree id="0" key="undefined" name="undefined">No type is defined (inherit from parent).</tree>>
+  <tree id="1" key="soma" parent="root" name="soma" color="#0D0">Soma (=cell body), should occur only once.</tree>
+  <tree id="2" key="axon" parent="root" name="axon" color="#00F">Axon, should occur only once.</tree>
+  <tree id="3" key="basal" parent="dendrite" name="(basal) dendrite" color="#F00">(basal) Dendrite</tree>
+  <tree id="4" key="apical" parent="dendrite" name="apical dendrite" color="#800">Apical dendrite.</tree>
+  <tree id="16" key="unknown" parent="root" name="unknown type" color="#800">Type not specified in either pre- or user defined types.</tree>
+  <tree id="17" key="dendrite" parent="root" name="dendrite" color="#800">Any type of dendrite.</tree>
+  <tree id="18" key="slice" parent="root" name="brain slice" color="#800">Brain slice from which neuron was traced.</tree>
+  <marker id="24" key="soma-center" parent="soma" name="soma (center point)"/>
+  <contour id="25" key="soma-contour" parent="soma" name="soma (contour)" closed="true"/>
+  <surface id="26" key="soma-surface" parent="soma" name="soma (surface)" src="soma.obj"/>
+  <volume id="27" key="soma-volume" parent="soma" name="soma (volume)" src="soma.nrrd"/>
+  <contour id="28" key="slice-contour" parent="slice" name="slice (contour)" closed="true"/>
+  <image id="29" key="slice-image" parent="slice" name="slice (image)" src="slice.jpg"/>
+  <volume id="30" key="slice-volume" parent="slice" name="slice (volume)" src="slice.nrrd"/>
+  <contour id="31" key="pia" parent="slice" name="pial surface"/>
+  <contour id="32" key="layer1" parent="slice" name="bottom of layer 1"/>
+  <contour id="33" key="layer2" parent="slice" name="bottom of layer 2"/>
+  <contour id="34" key="layer3" parent="slice" name="bottom of layer 3"/>
+  <contour id="35" key="layer4" parent="slice" name="bottom of layer 4"/>
+  <contour id="36" key="layer5" parent="slice" name="bottom of layer 5"/>
+  <contour id="37" key="layer6" parent="slice" name="bottom of layer 6"/>
+  <contour id="38" key="layer3A" parent="slice" name="bottom of layer 3A"/>
+  <contour id="39" key="layer3B" parent="slice" name="bottom of layer 3B"/>
+  <contour id="40" key="layer4A" parent="slice" name="bottom of layer 4A"/>
+  <contour id="41" key="layer4B" parent="slice" name="bottom of layer 4B"/>
+  <contour id="42" key="layer4C" parent="slice" name="bottom of layer 4C"/>
+  <contour id="43" key="layer5A" parent="slice" name="bottom of layer 5A"/>
+  <contour id="44" key="layer5B" parent="slice" name="bottom of layer 5B"/>
+  <contour id="45" key="layer4C-alpha" parent="slice" name="bottom of layer 4C-alpha"/>
+  <contour id="46" key="layer4C-beta" parent="slice" name="bottom of layer 4C-beta"/>
+</ExtendedTypes>

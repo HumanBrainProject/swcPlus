@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<!--?xml-stylesheet type="text/xsl" href="xs3p.xsl"?-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://www.neuroinformatics.nl"
+xmlns="http://www.neuroinformatics.nl" 
+elementFormDefault="qualified" version="0.1">
+
+<xs:complexType name="rootGeometry">
+  <xs:annotation><xs:documentation>
+  All geometric primitives are derived from this root geometry.
+  </xs:documentation></xs:annotation>
+  <xs:simpleContent>
+    <xs:extension base="xs:string">
+      <xs:attribute name="id" type="xs:integer">
+        <xs:annotation><xs:documentation>
+        "id" is the TypeID as used in the second column of the SWC data matrix
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="parent" type="xs:string">
+        <xs:annotation><xs:documentation>
+        "parent" is used to group different Types into a hierarchy, it 
+        refers to the key of another Type. This hierarchy does not play 
+        a role in interpreting the data in an SWC+ file, is only used 
+        to orderly display the contents of an SWC+ file.
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="key" type="xs:string">
+        <xs:annotation><xs:documentation>
+        "key" provides a short textual description of the Type
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="name" type="xs:string">
+        <xs:annotation><xs:documentation>
+        "name" provides a longer textual description of the Type
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="color" type="xs:string">
+        <xs:annotation><xs:documentation>
+        "color" suggests a color to use when drawing the Type.
+        The renderer may overrule this style element.
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
+<xs:complexType name="treeGeometry">
+  <xs:annotation><xs:documentation>
+  The treeGeometry extends the rootGeometry and has no additional attributes.
+  </xs:documentation></xs:annotation>
+  <xs:simpleContent>
+    <xs:extension base="rootGeometry">
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
+<xs:complexType name="contourGeometry">
+  <xs:annotation><xs:documentation>
+  The contourGeometry extends the rootGeometry with additional attributes "fill" and "closed".
+  </xs:documentation></xs:annotation>
+  <xs:simpleContent>
+    <xs:extension base="rootGeometry">
+      <xs:attribute name="fill" type="xs:string">
+        <xs:annotation><xs:documentation>
+        "fill" suggests a fill-color to use when drawing the contour.
+        The renderer may overrule this style element.
+        Default is no fill ("none").
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="closed" type="xs:boolean">
+        <xs:annotation><xs:documentation>
+        "closed" indicates whether a contour is closed or not.
+        Default is not closed ("false").
+        </xs:documentation></xs:annotation>
+      </xs:attribute>
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
+<xs:simpleType name='symbolType'>
+  <xs:annotation><xs:documentation>
+  Used by the symbol attribute, string restricted to length 10.
+  </xs:documentation></xs:annotation>
+  <xs:restriction base='xs:string'>
+    <xs:maxLength value='10'/>
+  </xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name="markerGeometry">
+  <xs:annotation><xs:documentation>
+  The markerGeometry extends the rootGeometry with additional attribute "symbol".
+  </xs:documentation></xs:annotation>
+  <xs:simpleContent>
+    <xs:extension base="rootGeometry">
+      <xs:attribute name="symbol" type="symbolType">
+        <xs:annotation><xs:documentation>
+        "symbol" suggests a symbol to be used to the marker.
+        If symbol starts with "#" followed by a number, then
+        this gets interpreted as an utf8 code. Default is "o".
+        </xs:documentation></xs:annotation>        
+      </xs:attribute>
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
+
+<xs:complexType name="imageGeometry">
+  <xs:annotation><xs:documentation>
+  The imageGeometry extends the rootGeometry with additional attribute "src".
+  </xs:documentation></xs:annotation>
+  <xs:simpleContent>
+    <xs:extension base="rootGeometry">
+      <xs:attribute name="src" type="xs:anyURI">
+        <xs:annotation><xs:documentation>
+        "src" is the source URL of the image.
+        Acceptable image formats are: PNG (.png),
+        GIF (.gif) and JPEG (.jpg).
+        </xs:documentation></xs:annotation>
+      </xs:attribute>      
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
+<xs:complexType name="volumeGeometry">
+  <xs:annotation><xs:documentation>
+  The volumeGeometry extends the rootGeometry with additional attribute "src".
+  </xs:documentation></xs:annotation>
+  <xs:simpleContent>
+    <xs:extension base="rootGeometry">
+      <xs:attribute name="src" type="xs:anyURI">
+        <xs:annotation><xs:documentation>
+        "src" is the source URL of the volume.
+        Acceptable volume formats are: Nearly Raw Raster Data (.nrrd).
+        </xs:documentation></xs:annotation>
+      </xs:attribute>      
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
+<xs:complexType name="surfaceGeometry">
+  <xs:annotation><xs:documentation>
+  The surfaceGeometry extends the rootGeometry with additional attribute "src".
+  </xs:documentation></xs:annotation>
+  <xs:simpleContent>
+    <xs:extension base="rootGeometry">
+      <xs:attribute name="src" type="xs:anyURI">
+        <xs:annotation><xs:documentation>
+        "src" is the source URL of the surface.
+        Acceptable surface formats are: Wavefront Object File (.obj).
+        </xs:documentation></xs:annotation>
+      </xs:attribute>      
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
+<xs:simpleType name="maturityType">
+  <xs:annotation><xs:documentation>
+  Used by the maturity attribute of ExtendedTypes.
+  </xs:documentation></xs:annotation>
+  <xs:restriction base="xs:string">
+    <xs:enumeration value="alpha" />
+    <xs:enumeration value="beta" />
+    <xs:enumeration value="stable" />
+  </xs:restriction>
+</xs:simpleType>
+
+<xs:element name="ExtendedTypes">
+  <xs:annotation><xs:documentation>
+  ExtendedTypes is the container element for the list of Types,
+  it allows any number of any of the listed Type elements.
+  </xs:documentation></xs:annotation>
+  <xs:complexType mixed="true">
+    <xs:choice minOccurs="1" maxOccurs="unbounded">
+      <xs:element name="tree" type="treeGeometry"/>      
+      <xs:element name="contour" type="contourGeometry"/>
+      <xs:element name="marker" type="markerGeometry"/>
+      <xs:element name="image" type="imageGeometry"/>
+      <xs:element name="volume" type="volumeGeometry"/>
+      <xs:element name="surface" type="surfaceGeometry"/>
+    </xs:choice>
+    <xs:attribute name="version" type="xs:float"/>
+    <xs:attribute name="maturity" type="maturityType"/>
+  </xs:complexType>
+</xs:element>
+
+</xs:schema>

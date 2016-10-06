@@ -1,0 +1,204 @@
+<html>
+<head></head>
+<body>
+<style>dt { font-weight: bold } tt { color:#040 }</style>
+*** working document, version 0.1 ***
+
+<h2>SWC plus (SWC+) format specification document</h2>
+<p>
+SWC plus (<tt>SWC+</tt>) is an open source format for storing neuron 
+morphologies. It is both forward and backward compatible with the 
+standardized SWC format used by NeuroMorpho.org, but has extended type 
+definitions that allow for storage of a variety of geometric primitives
+such as contours and markers, which are often present in Neurolucida source files. Since <tt>SWC+</tt> is compatible with
+<tt>SWC</tt>, the file extension remains <tt>.swc</tt>. Forward compatibility 
+implies that older software can read trees from <tt>SWC+</tt>, while backward 
+compatibility means that parsers for <tt>SWC+</tt> can also parse <tt>SWC</tt>.
+</p>
+<h3>Specification of standard SWC</h3>
+<p>
+(Adapted from: <a href="http://www.neuronland.org/NLMorphologyConverter/MorphologyFormats/SWC/Spec.html">Neuronland SWC specification</a>)<br/>
+An <tt>SWC</tt> file is a text file that starts with a comment section,
+in which each line starts with the symbol #.
+Below the comments, a numeric matrix with 7 columns follows.
+The seven numbers in each row are separated by spaces.
+</p><p>
+The seven columns have the following meaning:
+<ol><li>
+<tt>SampleID</tt> : Sample identifier. A positive integer.
+</li><li>
+<tt>StructureID</tt> : Structure identifier. The basic set of structures used
+in NeuroMorpho.org <tt>SWC</tt> files is:
+<pre>
+-1  - root
+ 0  - undefined
+ 1  - soma
+ 2  - axon
+ 3  - dendrite (=basal dendrite)
+ 4  - apical   (=apical dendrite)
+ 5+ - custom
+</pre>
+In addition, some databases use the following structures 5 and 6:
+<pre>
+5 - branch point (sometimes used for file parsing efficiency, branch 
+    points are otherwise defined as points that have multiple children)
+6 - end point (leaf)
+</pre>
+</li><li>
+<tt>x</tt> : X-position in micrometers
+</li><li>
+<tt>y</tt> : Y-position in micrometers
+</li><li>
+<tt>z</tt> : Z-position in micrometers
+</li><li>
+<tt>r</tt> : Radius in micrometers (half the cylinder thickness)
+</li><li>
+<tt>ParentID</tt> : Parent sample identifier. This defines how points are 
+connected to each other. In a tree, multiple points can have the same
+ParentID. The first point in the file must have <pre>ParentID = -1</pre>.
+Parent samples must be defined before they are being referred
+to. By counting how many points refer to the a given parent, the number 
+of its children can be computed.
+</li></ol>
+</p><p>
+<h3>Specification of the SWC+ extensions</h3>
+For new software to recognize the extended features of <tt>SWC+</tt> files,
+an <tt>SWC+</tt> file must start with the following 
+comment-line:
+<pre># SWC+ version 1.0</pre>
+where 1.0 refers to the <tt>SWC+</tt> version used (see <a href="#versioning">versioning</a>).
+</p><p>
+<tt>SWC+</tt> redefines the <tt>StructureID</tt> as a <tt>TypeID</tt> that links to an extensible
+Type Library that is partly predefined and partly user defined.
+Members 0 to 4 of the Type Library correspond to the standard
+<tt>SWC</tt> structure list (see above). Members 5 to 15 are undefined, because 
+they may be in use by various custom <tt>SWC</tt> files. Members 16-255 are 
+reserved for predefined types that are part of the <tt>SWC+</tt> standard, and 
+members 256-65535 are reserved for user defined types.
+</p><p>An <tt>SWC+</tt> Type not only encodes for a Structure, but also for the 
+geometric primitive that is used to represent the structure.
+The following geometric primitives are defined (* means required attribute, defaults between brackets):
+<dl>
+<dt>tree</dt><dd>tree of connected points <tt>(x,y,z)</tt> with radius <tt>r</tt> 
+  as used in standard <tt>SWC</tt> files</dd>
+<dt>contour</dt><dd>equivalent to NeuroLucida's contour, often used for 
+  tracing the cell body, or for tracing borders between cortical layers. 
+  <tt>r</tt> represents the wall thickness of the contour in micrometers.<br/>
+  Custom attributes: closed ("false"), fill ("none")</dd>
+<dt>marker</dt><dd>point marker located at <tt>(x,y,z)</tt>. <tt>r</tt> 
+  represents the marker size in micrometers.<br/> 
+  Custom attributes: symbol ("o")</dd>
+<dt>image</dt><dd>image anchor. The image is treated as a volume with
+  only a single point in the <tt>y</tt>-dimension. Coordinate 
+  transformations are the same as for the volume anchor.<br/>
+  Custom attributes: src*</dd>
+<dt>volume</dt><dd>volume anchor. If the volume is referred to by a 
+  single point, then <tt>(x,y,z)</tt> is used to translate the volume, 
+  and <tt>r</tt> to scale the volume. If the volume is referred 
+  to by a chain of four points, then the <tt>(x,y,z,r)</tt> of these 
+  four points are used as columns of a 4x4 transformation matrix that is
+  to be applied to the volume.<br/>
+  Custom attributes: src*</dd>
+<dt>surface</dt><dd>surface anchor. Vertices and faces are specified in
+  the file referenced by the <tt>src</tt>-attribute. Coordinate 
+  transformations of vertices are the same as for the volume anchor.<br/>
+  Custom attributes: src*</dd>
+</dl>
+A formal description of these geometric primitives is provided as an <a href="https://neuroinformatics.nl/HBP/SWCplus/ExtendedTypes.xsd">XML schema</a>.
+<p>Types are specified in <tt>XML</tt>, in which one of the geometric primitives 
+is used as the <tt>XML</tt>-tag for a given type. All primitives have required attributes
+<tt>id</tt> (the TypeID), <tt>key</tt> (short name),  <tt>name</tt> and
+<tt>parent</tt> plus optional attribute <tt>color</tt>. 
+On top of that come the custom attributes listed above, and finally a
+comment can be specified in the text between the opening and closing tag 
+of the type. See the example below. The <tt>parent</tt> attribute provides
+a grouping of types into a hierarchy, used to orderly display the contents
+of the SWC+ file. The attributes <tt>color</tt>, <tt>fill</tt> and <tt>symbol</tt> 
+are suggested style attributes. Their value may be overruled by the <tt>SWC+</tt> renderer.
+<pre>
+&lt;ExtendedTypes>
+  &lt;tree id="0" key="root" name="root node">Root node&lt;/tree>>
+  &lt;tree id="1" key="soma" parent="root" name="soma" color="#0D0">Soma (=cell body)&lt;/tree>
+  &lt;tree id="2" key="axon" parent="root" name="axon" color="#00F">Axon&lt;/tree>
+  &lt;tree id="3" key="dendrite" parent="root" name="(basal) dendrite" color="#F00">(basal) Dendrite&lt;/tree>
+  &lt;tree id="4" key="apical" parent="root" name="apical dendrite" color="#800">Apical dendrite&lt;/tree>
+  &lt;marker id="16" key="soma-center" parent="soma" name="soma (center point)"/>
+  &lt;contour id="17" key="soma-contour" parent="soma" name="soma (contour)" closed="true"/>
+  &lt;surface id="18" key="soma-surface" parent="soma" name="soma (surface)" src="soma.obj"/>
+  &lt;volume id="19" key="soma-volume" parent="soma" name="soma (volume)" src="soma.nrrd"/>
+  etc. etc.
+&lt;/ExtendedTypes>
+</pre>
+The complete predefined type library is <a href="https://neuroinformatics.nl/HBP/SWCplus/ExtendedTypes.html">available here</a>.
+</p><p>
+User defined types are defined in the same <tt>XML</tt> format as predefined 
+types. Each line is preceded by a # and placed in the comment section of
+the <tt>SWC</tt> file. For example:
+<pre>
+# &lt;ExtendedTypes>
+#   &lt;marker id="256" key="gapjunction" name="gap junction" parent="axon" symbol="G"/>
+# &lt;/ExtendedTypes>
+</pre>
+</p>
+
+<h3>Backward and forward compatibility with SWC</h3>
+<p>
+In standard <tt>SWC</tt>, all points belong to the <tt>tree</tt> geometric primitive
+and have a <tt>StructureID</tt> that refers to the neurite type of the given branch.
+In <tt>SWC+</tt>, the <tt>StructureID</tt> is replaced by a <tt>TypeID</tt>,
+but for the types supported by standard <tt>SWC</tt>, the <tt>StructureID</tt>
+and <tt>TypeID</tt> are equivalent. For the newly defined types, with
+<tt>TypeID</tt> 16 and up, it is expected that existing software will recognize these as
+unknown structures and will not treat them as part of any neurite tree.
+</p>
+
+<h3>Linear segments and type specifications in SWC and SWC+</h3>
+<p>
+In both <tt>SWC</tt> and <tt>SWC+</tt>, every point in the 7-column matrix
+has a <tt>TypeID</tt>. This is often redundant, since for example all
+points in an axonal tree have the same type. In general, for every linear 
+(non-branching) segment of a tree, the type of the first point in that
+segment is sufficient to specify its type. 
+<tt>SWC+</tt> specifies that the first point of a segment defines its type.
+Consecutive points may have the same <tt>TypeID</tt> (recommended), 
+or 0, 5 or 6 (for compatibility; 5 and 6 indicate "branch point" and 
+"end point" in some <tt>SWC</tt> variants). Any other value indicates 
+the start of a new segment, even if no branching occurs. If branching 
+does occur, a segment still continues if all but one of the branches
+are pseudo-branches. Pseudo branches are branches that do not use
+the same geometric primitive as the parent segment. It is tempting to 
+use the redundant type specifications to mark certain parts of a segment 
+with a label like 'bouton' or 'varicosity'. Doing so would however break
+compatibility with <tt>SWC</tt>. Such labels can instead be attached to a
+segment as separate points using pseudo branches with geometric primitive <tt>marker</tt>.
+</p>
+
+<a name="versioning"></a>
+<h3>SWC+ versioning</h3>
+<p>
+The first line of an <tt>SWC+</tt> file must be formatted as
+<pre># SWC+ version X.Y</pre> where X is the major and Y the minor 
+version number. The major version determines the Type Library to be used.
+Software that reads <tt>SWC+</tt> files must use ExtendedTypes_vX.xml
+for major version number X. The full url for version 0 is <a href="https://neuroinformatics.nl/HBP/SWCplus/ExtendedTypes_v0.xml">https://neuroinformatics.nl/HBP/SWCplus/ExtendedTypes_v0.xml</a>.
+Inside the <tt>ExtendedTypes_v0.xml</tt> file, the root XML element has
+a <tt>version</tt> attribute that contains the full version number.
+If an <tt>SWC+</tt>-reader has a Type Library with a full version number
+lower than that of the <tt>SWC+</tt> file it tries to read, then it needs
+to update its Type Library.
+</p>
+
+<a name="release_notes"></a>
+<p><h3>Release notes</h3>
+<tt>SWC+</tt> is currently under construction, the latest version 
+is 0.1.
+</p>
+<h3>SWC+ implementation</h3>
+<p>
+The SWC+ standard is originally developed as an export format for the
+<a href="https://neuroinformatics.nl/HBP/morphology-viewer/">HBP Morphology viewer</a>, 
+which can import and repair SWC files with certain quirks and export to SWC+, see
+<a href="HBP_implementation.html">this document</a> for implementation details.
+</p>
+
+</body></html>

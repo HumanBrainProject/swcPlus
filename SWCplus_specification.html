@@ -6,13 +6,41 @@
 
 <h2>SWC plus (SWC+) format specification document</h2>
 <p>
-SWC plus (<tt>SWC+</tt>) is an open source format for storing neuron 
+Reconstructed neuron morphologies play a very important role in 
+the data exchange between neurophysiology labs and the general 
+neuroscience community. The currently used data formats however are not good
+at maximizing the knowledge that can be extracted from the data.
+On the one hand there are closed source formats that have been developed
+over the years to support the ever expanding featureset of commercial
+tracing software that is often directly attached to the microscope setup.
+The most popular format being <tt>Neurolucida</tt> (MicroBrightField Inc.) in 
+various incarnations. The schema behind these formats has been 
+reverse-engineered to some extent, but remains elusive.
+On the other side of the spectrum is the very simple <tt>SWC</tt> format (Cannon, 1998), 
+that was designed to store trees as cylindrical segments to form the basis of 
+compartmental models. The conversion from the commercial, feature-rich
+formats to <tt>SWC</tt> comes with a big loss of information, for example all
+lines, markers or contours that mark features of the neuron and its 
+position in the tissue are lost.
+</p><p>
+What all formats lack is a standard way to describe such features,
+there is no standard way to label the border between layer 1 and 2.
+"layer 1/2", "Layer 1", "border between layer 1 and 2"?
+This is the motivation to introduce a new format called SWC+. As the name
+suggests it is derived from <tt>SWC</tt>. It does however allow lines,
+contours, markers and even images and surfaces to be embedded, and comes
+with an extensible Predefined Types Library that promotes standard ways 
+to store information about neurons.
+</p>
+<h3>An SWC-compatible format with Extensible Types</h3>
+<p>
+SWC plus (<tt>SWC+</tt>) is an open source (<a href="https://github.com/HumanBrainProject/SWCplus">github</a>) format for storing neuron 
 morphologies. It is both forward and backward compatible with the 
 standardized SWC format used by NeuroMorpho.org, but has extended type 
 definitions that allow for storage of a variety of geometric primitives
-such as contours and markers, which are often present in Neurolucida source files. Since <tt>SWC+</tt> is compatible with
-<tt>SWC</tt>, the file extension remains <tt>.swc</tt>. Forward compatibility 
-implies that older software can read trees from <tt>SWC+</tt>, while backward 
+such as contours and markers, which are often present in Neurolucida source files. 
+Since <tt>SWC+</tt> is compatible with <tt>SWC</tt>, the file extension remains <tt>.swc</tt>. 
+Forward compatibility implies that older software can read trees from <tt>SWC+</tt>, while backward 
 compatibility means that parsers for <tt>SWC+</tt> can also parse <tt>SWC</tt>.
 </p>
 <h3>Specification of standard SWC</h3>
